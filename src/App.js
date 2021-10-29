@@ -1,10 +1,11 @@
 import * as React from "react";
-import { ethers } from "ethers";
 
 import "./App.css";
 
-export default function App() {
-  const wave = () => {};
+const App = () => {
+  const wave = () => {
+    console.log("you waved at me!!!");
+  };
 
   return (
     <div className="mainContainer">
@@ -28,4 +29,6 @@ export default function App() {
       </div>
     </div>
   );
-}
+};
+
+export default App;
