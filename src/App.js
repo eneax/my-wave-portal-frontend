@@ -1,8 +1,25 @@
-import * as React from "react";
+import React from "react";
 
 import "./App.css";
 
 const App = () => {
+  const checkIfWalletIsConnected = () => {
+    // Make sure you have access to window.ethereum
+    const { ethereum } = window;
+
+    if (!ethereum) {
+      console.log("Make sure you have Metamask");
+      return;
+    } else {
+      console.log("We have the ethereum object: ", ethereum);
+    }
+  };
+
+  // Check if wallet is connected when page loads
+  React.useEffect(() => {
+    checkIfWalletIsConnected();
+  }, []);
+
   const wave = () => {
     console.log("you waved at me!!!");
   };
