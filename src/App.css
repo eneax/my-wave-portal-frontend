@@ -71,3 +71,36 @@
     transform: rotate(360deg);
   }
 }
+
+.wavesContainer {
+  margin-top: 20px;
+}
+
+.card {
+  border: 1px solid #f3f3f3;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 5px;
+}
+
+.card p {
+  font-weight: bold;
+}
+.card p:last-child {
+  color: rgba(269, 163, 17, 1);
+}
+
+.card small {
+  font-weight: normal;
+}
+
+.message {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
