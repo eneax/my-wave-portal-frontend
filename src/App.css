@@ -10,6 +10,8 @@
   flex-direction: column;
   justify-content: center;
   max-width: 600px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .header {
@@ -20,7 +22,6 @@
 
 .bio {
   text-align: center;
-  color: rgb(116, 114, 114);
   margin-top: 16px;
 }
 
