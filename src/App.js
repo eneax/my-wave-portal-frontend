@@ -1,10 +1,19 @@
 import React from "react";
+import { ethers } from "ethers";
 
 import "./App.css";
+import wavePortalAbi from "./utils/WavePortal.json";
 
 const App = () => {
   // store our user's public wallet
   const [currentAccount, setCurrentAccount] = React.useState("");
+
+  // contract address after you deploy
+  const contractAddress = "0x5113ECd2403ff0D49054114B2ee6808E8f89083D";
+
+  // ABI file is something our web app needs to know how to communicate with our contract.
+  // The contents of the ABI file can be found in a JSON file in your hardhat project
+  const contractABI = wavePortalAbi.abi;
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -52,8 +61,43 @@ const App = () => {
     }
   };
 
-  const wave = () => {
-    console.log("you waved at me!!!");
+  const wave = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        // "Provider" is what we use to talk to Ethereum nodes.
+        // We use nodes that Metamask provides in the background to send/receive data from our deployed contract (done with Alchemy)
+        const provider = new ethers.providers.Web3Provider(ethereum);
+
+        // A Signer in ethers is an abstraction of an Ethereum Account
+        // It can be used to sign messages and transactions and send signed transactions to the Ethereum Network to execute state changing operations
+        const signer = provider.getSigner();
+
+        const wavePortalContract = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+
+        let count = await wavePortalContract.getTotalWaves();
+        console.log("Retrieved total wave count: ", count.toNumber());
+
+        // Execute the actual wave from your smart contract
+        const waveTxn = await wavePortalContract.wave();
+        console.log("Mining...", waveTxn.hash);
+
+        await waveTxn.wait();
+        console.log("Mined -- ", waveTxn.hash);
+
+        count = await wavePortalContract.getTotalWaves();
+        console.log("Retrieved total wave count: ", count.toNumber());
+      } else {
+        console.log("Ethereum object doesn't exist!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // Check if wallet is connected when page loads
