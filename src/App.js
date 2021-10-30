@@ -12,7 +12,7 @@ const App = () => {
   const [loading, setLoading] = React.useState(false);
 
   // contract address after you deploy
-  const contractAddress = "0x8CB1764797a4ecA06D13B3a300999e906c29473E";
+  const contractAddress = "0xd96C7618AC6E4e56a7875eCE413D0bC6a3e7e78a";
 
   // ABI file is something our web app needs to know how to communicate with our contract.
   // The contents of the ABI file can be found in a JSON file in your hardhat project
