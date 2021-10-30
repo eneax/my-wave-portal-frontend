@@ -18,9 +18,8 @@ const App = () => {
         </div>
 
         <div className="bio">
-          Hey there! I'm Enea, a developer currently diving into Web3. Welcome
-          to my little corner of the web! Connect your Ethereum wallet and wave
-          at me!
+          I'm Enea, a developer tinkering with web3. Welcome to my little corner
+          of the web! Connect your Ethereum wallet and wave at me!
         </div>
 
         <button className="waveButton" onClick={wave}>
