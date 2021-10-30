@@ -33,20 +33,39 @@ const App = () => {
     }
   };
 
-  // Check if wallet is connected when page loads
-  React.useEffect(() => {
-    checkIfWalletIsConnected();
-  }, []);
+  const connectWallet = async () => {
+    try {
+      const { ethereum } = window;
+      if (!ethereum) {
+        alert("Get MetaMask Now!");
+        return;
+      }
+
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+
+      console.log("Connected", accounts[0]);
+      setCurrentAccount(accounts[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const wave = () => {
     console.log("you waved at me!!!");
   };
 
+  // Check if wallet is connected when page loads
+  React.useEffect(() => {
+    checkIfWalletIsConnected();
+  }, []);
+
   return (
     <div className="mainContainer">
       <div className="dataContainer">
         <div className="header">
-          <span role="img" aria-label="hey">
+          <span role="img" aria-label="Waving Hand">
             👋
           </span>{" "}
           Hey there!
@@ -58,8 +77,20 @@ const App = () => {
         </div>
 
         <button className="waveButton" onClick={wave}>
+          <span role="img" aria-label="Waving Hand">
+            👋
+          </span>{" "}
           Wave at Me
         </button>
+
+        {!currentAccount && (
+          <button className="waveButton" onClick={connectWallet}>
+            <span role="img" aria-label="Purse">
+              👛
+            </span>{" "}
+            Connect Wallet
+          </button>
+        )}
       </div>
     </div>
   );
