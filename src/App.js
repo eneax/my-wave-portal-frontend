@@ -3,15 +3,33 @@ import React from "react";
 import "./App.css";
 
 const App = () => {
-  const checkIfWalletIsConnected = () => {
-    // Make sure you have access to window.ethereum
-    const { ethereum } = window;
+  // store our user's public wallet
+  const [currentAccount, setCurrentAccount] = React.useState("");
 
-    if (!ethereum) {
-      console.log("Make sure you have Metamask");
-      return;
-    } else {
-      console.log("We have the ethereum object: ", ethereum);
+  const checkIfWalletIsConnected = async () => {
+    try {
+      // Make sure you have access to window.ethereum
+      const { ethereum } = window;
+
+      if (!ethereum) {
+        console.log("Make sure you have Metamask");
+        return;
+      } else {
+        console.log("We have the ethereum object: ", ethereum);
+      }
+
+      // Check if we're authorized to access the user's wallet
+      const accounts = await ethereum.request({ method: "eth_accounts" });
+
+      if (accounts.length !== 0) {
+        const account = accounts[0];
+        console.log("Found an authorized account:", account);
+        setCurrentAccount(account);
+      } else {
+        console.log("No authorized account found!");
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
