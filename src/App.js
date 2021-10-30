@@ -7,6 +7,7 @@ import wavePortalAbi from "./utils/WavePortal.json";
 const App = () => {
   // store our user's public wallet
   const [currentAccount, setCurrentAccount] = React.useState("");
+  const [totalWaves, setTotalWaves] = React.useState(0);
 
   // contract address after you deploy
   const contractAddress = "0x5113ECd2403ff0D49054114B2ee6808E8f89083D";
@@ -92,6 +93,9 @@ const App = () => {
 
         count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count: ", count.toNumber());
+
+        // store waves
+        setTotalWaves(count.toNumber());
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -99,6 +103,34 @@ const App = () => {
       console.log(error);
     }
   };
+
+  React.useEffect(() => {
+    const getWavesCount = async () => {
+      try {
+        const { ethereum } = window;
+
+        if (ethereum) {
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const wavePortalContract = new ethers.Contract(
+            contractAddress,
+            contractABI,
+            signer
+          );
+
+          let count = await wavePortalContract.getTotalWaves();
+          console.log("Retrieved total wave count: ", count.toNumber());
+          setTotalWaves(count.toNumber());
+        } else {
+          console.log("Ethereum object doesn't exist!");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getWavesCount();
+  });
 
   // Check if wallet is connected when page loads
   React.useEffect(() => {
@@ -118,6 +150,10 @@ const App = () => {
         <div className="bio">
           I'm Enea, a developer tinkering with web3. Welcome to my little corner
           of the web! Connect your Ethereum wallet and wave at me!
+        </div>
+
+        <div className="totalWaves">
+          Total waves: <span className="wavesCount">{totalWaves}</span>
         </div>
 
         <button className="waveButton" onClick={wave}>
