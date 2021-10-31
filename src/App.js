@@ -210,7 +210,16 @@ const App = () => {
           </small>
         </p>
 
-        {loading ? (
+        {}
+
+        {!currentAccount ? (
+          <button className="customButton" onClick={connectWallet}>
+            <span role="img" aria-label="Purse">
+              👛
+            </span>{" "}
+            Connect Wallet
+          </button>
+        ) : loading ? (
           <div id="loader"></div>
         ) : (
           <div className="card">
@@ -222,18 +231,9 @@ const App = () => {
             />
 
             <button className="customButton" onClick={wave} disabled={loading}>
-              {loading ? "loader" : "Send"}
+              Send
             </button>
           </div>
-        )}
-
-        {!currentAccount && (
-          <button className="customButton" onClick={connectWallet}>
-            <span role="img" aria-label="Purse">
-              👛
-            </span>{" "}
-            Connect Wallet
-          </button>
         )}
 
         <div className="wavesContainer">
