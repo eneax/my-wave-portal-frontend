@@ -18,34 +18,6 @@ const App = () => {
   // The contents of the ABI file can be found in a JSON file in your hardhat project
   const contractABI = wavePortalAbi.abi;
 
-  const checkIfWalletIsConnected = async () => {
-    try {
-      // Make sure you have access to window.ethereum
-      const { ethereum } = window;
-
-      if (!ethereum) {
-        console.log("Make sure you have Metamask");
-        return;
-      } else {
-        console.log("We have the ethereum object: ", ethereum);
-      }
-
-      // Check if we're authorized to access the user's wallet
-      const accounts = await ethereum.request({ method: "eth_accounts" });
-
-      if (accounts.length !== 0) {
-        const account = accounts[0];
-        console.log("Found an authorized account:", account);
-        setCurrentAccount(account);
-        getAllWaves();
-      } else {
-        console.log("No authorized account found!");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const connectWallet = async () => {
     try {
       const { ethereum } = window;
@@ -112,38 +84,6 @@ const App = () => {
     }
   };
 
-  // Gets all waves from your contract
-  const getAllWaves = async () => {
-    const { ethereum } = window;
-
-    try {
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const wavePortalContract = new ethers.Contract(
-          contractAddress,
-          contractABI,
-          signer
-        );
-        const waves = await wavePortalContract.getAllWaves();
-
-        const wavesCleaned = waves.map((wave) => {
-          return {
-            address: wave.waver,
-            timestamp: new Date(wave.timestamp * 1000),
-            message: wave.message,
-          };
-        });
-
-        setAllWaves(wavesCleaned);
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   // Listen in for emitter events!
   React.useEffect(() => {
     let wavePortalContract;
@@ -177,12 +117,74 @@ const App = () => {
         wavePortalContract.off("NewWave", onNewWave);
       }
     };
-  }, []);
+  }, [contractABI]);
 
   // Check if wallet is connected when page loads
   React.useEffect(() => {
+    const checkIfWalletIsConnected = async () => {
+      try {
+        // Make sure you have access to window.ethereum
+        const { ethereum } = window;
+
+        if (!ethereum) {
+          console.log("Make sure you have Metamask");
+          return;
+        } else {
+          console.log("We have the ethereum object: ", ethereum);
+        }
+
+        // Check if we're authorized to access the user's wallet
+        const accounts = await ethereum.request({ method: "eth_accounts" });
+
+        if (accounts.length !== 0) {
+          const account = accounts[0];
+          console.log("Found an authorized account:", account);
+          setCurrentAccount(account);
+        } else {
+          console.log("No authorized account found!");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
     checkIfWalletIsConnected();
   }, []);
+
+  // Gets all waves from your contract
+  React.useEffect(() => {
+    const getAllWaves = async () => {
+      const { ethereum } = window;
+
+      try {
+        if (ethereum) {
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const wavePortalContract = new ethers.Contract(
+            contractAddress,
+            contractABI,
+            signer
+          );
+          const waves = await wavePortalContract.getAllWaves();
+
+          const wavesCleaned = waves.map((wave) => {
+            return {
+              address: wave.waver,
+              timestamp: new Date(wave.timestamp * 1000),
+              message: wave.message,
+            };
+          });
+
+          setAllWaves(wavesCleaned);
+        } else {
+          console.log("Ethereum object doesn't exist!");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getAllWaves();
+  }, [contractABI]);
 
   return (
     <div className="mainContainer">
@@ -230,20 +232,17 @@ const App = () => {
         )}
 
         <div className="wavesContainer">
-          {allWaves.map((wave, index) => {
-            console.log(wave);
-            return (
-              <div key={index} className="card">
-                <p>
-                  Waver: <small>{wave.address}</small>
-                </p>
-                <p>
-                  Posted on: <small>{wave.timestamp.toString()}</small>
-                </p>
-                <p>{wave.message}</p>
-              </div>
-            );
-          })}
+          {allWaves.map((wave, index) => (
+            <div key={index} className="card">
+              <p>
+                Waver: <small>{wave.address}</small>
+              </p>
+              <p>
+                Posted on: <small>{wave.timestamp.toString()}</small>
+              </p>
+              <p>{wave.message}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
