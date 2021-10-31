@@ -232,17 +232,19 @@ const App = () => {
         )}
 
         <div className="wavesContainer">
-          {allWaves.map((wave, index) => (
-            <div key={index} className="card">
-              <p>
-                Waver: <small>{wave.address}</small>
-              </p>
-              <p>
-                Posted on: <small>{wave.timestamp.toString()}</small>
-              </p>
-              <p>{wave.message}</p>
-            </div>
-          ))}
+          {allWaves
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+            .map((wave, index) => (
+              <div key={index} className="card">
+                <p>
+                  Waver: <small>{wave.address}</small>
+                </p>
+                <p>
+                  Posted on: <small>{wave.timestamp.toString()}</small>
+                </p>
+                <p>{wave.message}</p>
+              </div>
+            ))}
         </div>
       </div>
     </div>
