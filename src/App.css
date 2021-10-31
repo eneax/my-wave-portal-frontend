@@ -25,6 +25,10 @@
   margin-top: 16px;
 }
 
+.tip {
+  display: block;
+}
+
 .totalWaves {
   text-align: center;
   margin-top: 16px;
@@ -34,7 +38,7 @@
   font-weight: bold;
 }
 
-.waveButton {
+.customButton {
   cursor: pointer;
   margin-top: 16px;
   padding: 8px;

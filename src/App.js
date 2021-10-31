@@ -189,41 +189,46 @@ const App = () => {
   return (
     <div className="mainContainer">
       <div className="dataContainer">
-        <div className="header">
+        <h1 className="header">
           <span role="img" aria-label="Waving Hand">
             👋
           </span>{" "}
           Hey there!
-        </div>
+        </h1>
 
-        <div className="bio">
+        <p className="bio">
           I'm Enea, a developer tinkering with web3. Welcome to my little corner
-          of the web! Connect your Ethereum wallet and wave at me!
-        </div>
+          of the web! Connect your Ethereum wallet and wave at me!{" "}
+          <small className="tip">
+            <span role="img" aria-label="Police Car Light">
+              🚨
+            </span>
+            <span> Make sure to use the Rinkeby Test Network </span>
+            <span role="img" aria-label="Police Car Light">
+              🚨
+            </span>
+          </small>
+        </p>
 
         {loading ? (
           <div id="loader"></div>
         ) : (
-          <>
-            <div className="card">
-              <label>Send a Wave</label>
+          <div className="card">
+            <input
+              type="text"
+              className="message"
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Enter your message here :)"
+            />
 
-              <input
-                type="text"
-                className="message"
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Enter your message here :)"
-              />
-
-              <button className="waveButton" onClick={wave} disabled={loading}>
-                {loading ? "loader" : "Send"}
-              </button>
-            </div>
-          </>
+            <button className="customButton" onClick={wave} disabled={loading}>
+              {loading ? "loader" : "Send"}
+            </button>
+          </div>
         )}
 
         {!currentAccount && (
-          <button className="waveButton" onClick={connectWallet}>
+          <button className="customButton" onClick={connectWallet}>
             <span role="img" aria-label="Purse">
               👛
             </span>{" "}
