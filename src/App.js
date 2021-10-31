@@ -12,7 +12,7 @@ const App = () => {
   const [loading, setLoading] = React.useState(false);
 
   // contract address after you deploy
-  const contractAddress = "0xd96C7618AC6E4e56a7875eCE413D0bC6a3e7e78a";
+  const contractAddress = "0xa1A0a9896204978D0a1495c1Bbce49704f340788";
 
   // ABI file is something our web app needs to know how to communicate with our contract.
   // The contents of the ABI file can be found in a JSON file in your hardhat project
@@ -37,6 +37,7 @@ const App = () => {
         const account = accounts[0];
         console.log("Found an authorized account:", account);
         setCurrentAccount(account);
+        getAllWaves();
       } else {
         console.log("No authorized account found!");
       }
@@ -88,7 +89,12 @@ const App = () => {
         console.log("Retrieved total wave count: ", count.toNumber());
 
         // Execute the actual wave from your smart contract
-        const waveTxn = await wavePortalContract.wave(message);
+        // Make the user pay a set amount of gas of 300,000.
+        // If they don't use all of it in the transaction they'll automatically be refunded.
+        const waveTxn = await wavePortalContract.wave(message, {
+          gasLimit: 300000,
+        });
+
         console.log("Mining...", waveTxn.hash);
 
         await waveTxn.wait();
@@ -108,9 +114,9 @@ const App = () => {
 
   // Gets all waves from your contract
   const getAllWaves = async () => {
-    try {
-      const { ethereum } = window;
+    const { ethereum } = window;
 
+    try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
@@ -119,37 +125,17 @@ const App = () => {
           contractABI,
           signer
         );
-
-        // Call the getAllWaves method from your Smart Contract
         const waves = await wavePortalContract.getAllWaves();
 
-        // We only need address, timestamp, and message in our UI
-        let wavesCleaned = [];
-        waves.forEach((wave) => {
-          wavesCleaned.unshift({
+        const wavesCleaned = waves.map((wave) => {
+          return {
             address: wave.waver,
             timestamp: new Date(wave.timestamp * 1000),
             message: wave.message,
-          });
-        });
-
-        // Store our data in React State
-        setAllWaves(wavesCleaned);
-
-        wavePortalContract.on("NewWave", (from, timestamp, message, winner) => {
-          const newWave = {
-            address: from,
-            timestamp: new Date(timestamp * 1000),
-            message: message,
-            winner: winner,
           };
-          if (allWaves.find((el) => newWave === el)) {
-            console.log(
-              allWaves.find((el) => newWave.timestamp === el.timestamp)
-            );
-            setAllWaves((prevState) => [newWave, ...prevState]);
-          }
         });
+
+        setAllWaves(wavesCleaned);
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -158,13 +144,44 @@ const App = () => {
     }
   };
 
+  // Listen in for emitter events!
+  React.useEffect(() => {
+    let wavePortalContract;
+
+    const onNewWave = (from, timestamp, message) => {
+      console.log("NewWave", from, timestamp, message);
+      setAllWaves((prevState) => [
+        ...prevState,
+        {
+          address: from,
+          timestamp: new Date(timestamp * 1000),
+          message: message,
+        },
+      ]);
+    };
+
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+
+      wavePortalContract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        signer
+      );
+      wavePortalContract.on("NewWave", onNewWave);
+    }
+
+    return () => {
+      if (wavePortalContract) {
+        wavePortalContract.off("NewWave", onNewWave);
+      }
+    };
+  }, []);
+
   // Check if wallet is connected when page loads
   React.useEffect(() => {
     checkIfWalletIsConnected();
-  }, []);
-
-  React.useEffect(() => {
-    getAllWaves();
   }, []);
 
   return (
